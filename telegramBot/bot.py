@@ -3,10 +3,10 @@ import json
 import requests
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,ConversationHandler
-from utilities import global_vars
+from utilities import global_vars,parser,crypto
 import os
 
-API_DECIDE = 'http://localhost:8000/'
+API_DECIDE = 'http://127.0.0.1:8000/'
 BOT_TOKEN = '5061816889:AAFSjO0WEToxu2gGVvN47pVdTFDfju71fEg'
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -14,35 +14,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-LOGIN, STORE, VOTINGS, VOTING, SAVE_VOTE  = range(5)
+LOGIN, STORE, VOTINGS  = range(3)
 
 
 def get_token(credentials):
 
     r = requests.post(API_DECIDE + "authentication/login/", credentials)
 
-    return r
-
-
-def get_votings(id):
-
-    r = requests.get(API_DECIDE + "voting/user/?id="+str(id))
-    return r
-
-
-def get_user(token):
-    data = {'token': token}
-    r = requests.post(API_DECIDE + "authentication/getuser/", data)
-    return r
-
-def save_vote_data(data_dict):
-    
-    headers = {"Authorization": "Token " + data_dict['token'],
-                "Content-Type": "application/json"}
-    
-    r = requests.post(API_DECIDE + "store/", json=data_dict, headers = headers)
-
-    print(r.status_code)
     return r
 
 
@@ -110,11 +88,6 @@ def error(update, context):
 
 
 
-
-
-
-
-
 def main():
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
@@ -124,13 +97,9 @@ def main():
         states={
             LOGIN: [MessageHandler(Filters.regex('^(Login)$'), login)],
 
-            #STORE: [MessageHandler(Filters.text, login.store)],
+            STORE: [MessageHandler(Filters.text, store)],
 
-            #VOTINGS: [MessageHandler(Filters.regex('^(Vote)$'), votings.votings)],
-
-            #VOTING: [MessageHandler(Filters.text, voting.voting)],
-
-            #SAVE_VOTE: [MessageHandler(Filters.text,save_vote.save_vote)]
+            
         },
 
         fallbacks=[CommandHandler('cancel', cancel)]
@@ -140,16 +109,6 @@ def main():
 
     # log all errors
     dp.add_error_handler(error)
-
-   # if(config.WEBHOOK):
-    #    logger.info("WEBHOOK ACTIVADO")
-     #   PORT = int(os.environ.get("PORT", config.PORT))
-      #  updater.start_webhook(listen="0.0.0.0",
-       #                       port=PORT,
-        #                      url_path=config.BOT_TOKEN)
-        #updater.bot.set_webhook("https://{}.herokuapp.com/{}".format(config.HEROKU_APP_NAME, config.BOT_TOKEN))
-    #else:
-     #   updater.start_polling()
 
     updater.idle()
 
