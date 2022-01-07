@@ -12,34 +12,50 @@ class Question(models.Model):
     def clean(self):
         if(validators.lofensivo(self.desc)):
             raise ValidationError("Se ha detectado lenguaje ofensivo")
+    
+    NONSELECTED='NO'
 
-    binary_question = models.BooleanField(default=False,verbose_name="Answers Yes/No", help_text="Check the box to generate a binary question")
+    BINARY = 'BI'
+
+    YESNO = 'YN'
+
+    BADGOOD = 'BG'
+
+    CHOICES=[(NONSELECTED,'Create your questions below'),(BINARY, 'Binary Question'),
+    (YESNO, 'Yes/No Question'),(BADGOOD, 'Very Bad/ Very Good Question')]
+
+    question_type= models.CharField(max_length=2, choices= CHOICES, default=NONSELECTED)
+
     def __str__(self):
         return self.desc
-
-    YNNS_question = models.BooleanField(default=False,verbose_name="Answers Yes, No, NS/NC", help_text="Check the box to create a question of Yes, No or NS/NC")
-    def __str__(self):
-        return self.desc
-
 
 @receiver(post_save, sender=Question)
 def check_question(sender, instance, **kwargs):
-    if instance.binary_question==True and instance.options.all().count()==0:
+    if instance.question_type=='YN' and instance.options.all().count()==0:
+        option1 = QuestionOption(question=instance, number=1, option="Si")
+        option1.save()
+        option2 = QuestionOption(question=instance, number=2, option="No") 
+        option2.save()
+        option3 = QuestionOption(question=instance, number=3, option="NS/NC") 
+        option3.save()
+
+    if instance.question_type=='BI' and instance.options.all().count()==0:
         option1 = QuestionOption(question=instance, number=1, option="Si")
         option1.save()
         option2 = QuestionOption(question=instance, number=2, option="No") 
         option2.save()
 
-@receiver(post_save, sender=Question)
-def check_question(sender, instance, **kwargs):
-    if instance.YNNS_question==True and instance.options.all().count()==0:
-        option1 = QuestionOption(question=instance, number=1, option="Si")
+    if instance.question_type=='BG' and instance.options.all().count()==0:
+        option1 = QuestionOption(question=instance, number=1, option="Very Bad")
         option1.save()
-        option2 = QuestionOption(question=instance, number=2, option="No") 
+        option2 = QuestionOption(question=instance, number=2, option="Bad") 
         option2.save()
-        option2 = QuestionOption(question=instance, number=3, option="NS/NC") 
-        option2.save()
-
+        option3 = QuestionOption(question=instance, number=3, option="OK") 
+        option3.save()
+        option4 = QuestionOption(question=instance, number=4, option="Good") 
+        option4.save()
+        option5 = QuestionOption(question=instance, number=5, option="Very Good") 
+        option5.save()
 
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
@@ -53,7 +69,6 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
-
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
@@ -91,9 +106,7 @@ class Voting(models.Model):
         return [[i['a'], i['b']] for i in votes]
 
     def tally_votes(self, token=''):
-        '''
-        The tally is a shuffle and then a decrypt
-        '''
+        '''The tally is a shuffle and then a decrypt'''
 
         votes = self.get_votes(token)
 
