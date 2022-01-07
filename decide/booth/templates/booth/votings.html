@@ -2,7 +2,64 @@
 {% load i18n static %}
 
 {% block content %}
- <link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600);
+
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1{
+	background: #03485f;
+	color: #E2B842;
+
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+h3{
+	position: absolute;
+top: 10%; 
+left: 30%;
+font-style: italic;
+}
+table {
+	position: absolute;
+top: 15%; 
+left: 33%;
+  border-radius: 0.25em;
+  border-collapse: collapse;
+  margin: 1em;
+}
+th {
+  border-bottom: 1px solid hsl(194, 11%, 24%);
+  background-color: #055e7c;
+  color: #E2B842;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+td {
+  color: #03485f;
+font-weight:bold;  
+font-style: italic;
+  font-weight: 400;
+  padding: 0.65em 1em;
+}
+tbody tr {
+  transition: background 0.25s ease;
+}
+
+
+
+</style>
+ <h1>This table shows all the votings we have</h1>
+<h3>*You can't vote if the voting is not started*</h3>
 <table>
 		<tr>
 		<th>Name</th>

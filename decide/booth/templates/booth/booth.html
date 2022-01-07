@@ -11,6 +11,7 @@
 
 {% block content %}
 <h1>{{ voting.id }} - {{ voting.name }}</h1>
+<p> {{ voting.desc }} </p>   
     <div id="app-booth">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
@@ -49,7 +50,67 @@
                 </b-form-group>
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
-
+            <div id="voting">
+                <div id="voting">
+                   <br/>
+                   <div id="styleDiv">
+                   {% if voting.desc %}
+                   <div id="styleDiv">
+                       <p id="textDescription"> {{ voting.desc }} </p>
+                       <p id="guideDescription" class="divGuide" style="padding:0px;margin:0px;">
+                       {% trans "This is the description of the voting" %}
+           
+                       {% if start_date == None%}
+                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertDateNotStart()"/>
+                       {%else%}
+                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertDateStart()"/>
+                       {% endif %}
+                       </p>              	 
+                   </div>
+                   {% endif %}
+                   <br/>
+                   <div class="styleDiv">
+                   {% if start_date == None%}
+                       <p>La votación no ha empezado aún</p>
+                       <p id="pDateNotStart" style="left:0;">{% trans "The votation has not started yet" %}</p>
+                       <div id="guideDateNotStart" class="divGuide" style="padding:5px;margin:5px;">
+                           {% trans "This message indicates you that the voting has not started" %}
+                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
+                       </div>
+           
+                   {%else%}
+                       <p>La votación empezó el: {{ start_date }}</p>
+           
+                       <p id="pDate" style="left:0;">{% trans "The votation started:" %}{{ start_date }}</p>
+                       <div id="guideDate" class="divGuide" style="margin-left:20px;padding:5px;">
+                           {% trans "This represents the date that the voting started" %}
+                          {%if end_date == None%}
+                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertStillVote()"/>
+                       {% else %}
+                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertNotStillVote()"/>
+                       {% endif %}
+                       </div>
+                       <br>
+                       {%if end_date == None%}
+                           <p>Aún puede votar, no ha finalizado la votación</p>
+                           <p id="pStillVote" style="left:0;">{% trans "You can still vote, the voting has not finished" %}</p>
+                           <div id="guideStillVote" class="divGuide" style="margin-left:20px;padding:5px;">
+                           {% trans "The voting has not finished yet then you can vote" %}
+                           <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
+                           </div>
+                           <br>
+                       {% else %}
+                           <p>Ya no puede votar, la votación se cerró el: {{ end_date }}</p>
+                           <p id="pStillNotVote" style="left:0;">{% trans "You can not vote now, the voting closed:" %}{{ end_date }}</p>
+                           <div id="guideNotStillVote" class="divGuide" style="margin-left:5px;padding:5px;">
+                           {% trans "The voting has finished,you can not vote" %}
+                           <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
+                           </div>
+                           <br>
+                        {% endif %}
+           
+                   {% endif %}
+                   </div>
             <!-- Voting -->
             <div v-if="!signup">
                 <h2>[[ voting.question.desc ]]</h2>
