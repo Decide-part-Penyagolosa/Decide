@@ -10,12 +10,11 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ voting.id }} - {{ voting.name }}</h1>
-<p> {{ voting.desc }} </p>   
+<h1>{{ voting.id }} + {{ voting.name }}/h1>
     <div id="app-booth">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1">Decide </b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
                     <b-nav-item href="#" v-on:click="decideLogout">
                         {% trans "logout" %}
@@ -28,7 +27,8 @@
         </b-alert>
 
         <div class="voting">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h1>[[ voting.id ]] - [[ voting.name ]] hey</h1>
+            
 
             <!-- Register -->
             <b-form @submit="onSubmitLogin" v-if="signup">
@@ -54,6 +54,7 @@
                 <div id="voting">
                    <br/>
                    <div id="styleDiv">
+                    <p id="hey"> hey</p>
                    {% if voting.desc %}
                    <div id="styleDiv">
                        <p id="textDescription"> {{ voting.desc }} </p>
@@ -69,8 +70,10 @@
                    </div>
                    {% endif %}
                    <br/>
+                    
                    <div class="styleDiv">
-                   {% if start_date == None%}
+                       {% if start_date == None%}
+
                        <p>La votación no ha empezado aún</p>
                        <p id="pDateNotStart" style="left:0;">{% trans "The votation has not started yet" %}</p>
                        <div id="guideDateNotStart" class="divGuide" style="padding:5px;margin:5px;">
@@ -79,7 +82,7 @@
                        </div>
            
                    {%else%}
-                       <p>La votación empezó el: {{ start_date }}</p>
+                       <p>{{ start_date }}</p>
            
                        <p id="pDate" style="left:0;">{% trans "The votation started:" %}{{ start_date }}</p>
                        <div id="guideDate" class="divGuide" style="margin-left:20px;padding:5px;">
@@ -113,7 +116,6 @@
                    </div>
             <!-- Voting -->
             <div v-if="!signup">
-                <h2>[[ voting.question.desc ]]</h2>
                 <b-form-group v-for="opt in voting.question.options" :key="opt.number">
                     <b-form-radio v-model="selected"
                                   :id="'q' + opt.number"
