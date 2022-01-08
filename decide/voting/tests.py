@@ -114,13 +114,13 @@ class VotingTestCase(BaseTestCase):
 
     def test_lofensivo_pass_by_words(self):
         self.login()
-        question = Question(desc='Esta descripcion no contiene lenguaje ofensivo')
+        question = Question(desc='Esta descripcion no contiene lenguaje ofensivo', question_type=0, voting_type=2)
         question.clean()
         self.assertEqual(question.desc, 'Esta descripcion no contiene lenguaje ofensivo')
 
     def test_lofensivo_pass_by_percentage(self):
         self.login()
-        question = Question(desc='Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas')
+        question = Question(desc='Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas', question_type=0, voting_type=2)
         question.clean()
         self.assertEqual(question.desc, 'Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas')
         
