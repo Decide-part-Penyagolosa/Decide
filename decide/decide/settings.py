@@ -110,7 +110,6 @@ APIS = {
 }
 
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -218,6 +217,7 @@ if os.path.exists("config.jsonnet"):
         vars()[k] = v
 
 
+
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 
@@ -230,14 +230,8 @@ LOGIN_REDIRECT_URL = '/authentication/redirection'
 LOGOUT_REDIRECT_URL = '/booth/voting'
 
 
-NOSE_ARGS = [
-    '--with-xunit'
-]
 
 
 # import django_heroku
 # django_heroku.settings(locals(),test_runner=False)
 
-
-import django_heroku
-django_heroku.settings(locals(),test_runner=False)
