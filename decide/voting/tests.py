@@ -141,6 +141,41 @@ class VotingTestCase(BaseTestCase):
         question = Question(desc='test question', voting_type=1, question_type=1, seat=155)
         question.clean()
         self.assertEqual(question.seat, 155)
+
+    
+
+    def test_create_binary_voting(self):
+        q = Question(desc='binary voting', question_type=1)
+        q.save()
+        
+        opt = QuestionOption(question=q)
+        opt.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def test_create_YNNS(self):
+        q = Question(desc='test question', question_type=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
     
     def test_lofensivo_dont_pass(self):
         self.login()
