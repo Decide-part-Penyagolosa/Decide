@@ -8,43 +8,77 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from base import mods
 from base.models import Auth, Key
 
-class Detector(models.Model):
-    word = models.TextField()
-
-    def __str__(self):
-        return self.word
-
-class Percentage(models.Model):
-    number = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
-
-    def __str__(self):
-        return str(self.number)
-
-
-
 class Question(models.Model):
+    
     desc = models.TextField()
+    VOTING=[(0, 'Default'),(1, 'Dhont'),
+    (2, 'Paridad'),(3, 'Borda')]
+    voting_type= models.SmallIntegerField(choices= VOTING, default=0)
+    
+    CHOICES=[(0,'Create your questions below'),(1, 'Binary Question'),
+    (2, 'Yes/No Question'),(3, 'Very Bad/ Very Good Question')]
+
+    question_type= models.SmallIntegerField(choices= CHOICES, default=0)
+    seat= models.PositiveIntegerField(blank=True, null=True)
+
     def clean(self):
         if(validators.lofensivo(self.desc)):
             raise ValidationError("Se ha detectado lenguaje ofensivo")
-
-    binary_question = models.BooleanField(default=False,verbose_name="Answers Yes/No", help_text="Check the box to generate a binary question")
+        if self.seat==None and self.voting_type==1:
+            raise ValidationError("Introduzca los escaños necesarios para usar una votación D'hont")
+    
     def __str__(self):
         return self.desc
 
-
+@receiver(post_save, sender=Question)
 def check_question(sender, instance, **kwargs):
-    if instance.binary_question==True and instance.options.all().count()==0:
-        option1 = QuestionOption(question=instance, number=1, option="Si")
+    if instance.question_type==2 and instance.options.all().count()==0 and (instance.voting_type==0,instance.voting_type==2 or instance.voting_type==1):
+        option1 = QuestionOption(question=instance, number=1, option="Si", group="g2")
         option1.save()
-        option2 = QuestionOption(question=instance, number=2, option="No") 
+        option2 = QuestionOption(question=instance, number=2, option="No", group="g2")
         option2.save()
+        option3 = QuestionOption(question=instance, number=3, option="NS/NC", group="g2") 
+        option3.save()
+    
+    if instance.question_type==1 and instance.options.all().count()==0 and (instance.voting_type==0,instance.voting_type==2 or instance.voting_type==1):
+        option1 = QuestionOption(question=instance, number=1, option="Si", group="g2")
+        option1.save()
+        option2 = QuestionOption(question=instance, number=2, option="No", group="g2")
 
+    if instance.question_type==3 and instance.options.all().count()==0 and (instance.voting_type==0,instance.voting_type==2 or instance.voting_type==1):
+        option1 = QuestionOption(question=instance, number=1, option="Very Bad")
+        option1.save()
+        option2 = QuestionOption(question=instance, number=2, option="Bad") 
+        option2.save()
+        option3 = QuestionOption(question=instance, number=3, option="OK") 
+        option3.save()
+        option4 = QuestionOption(question=instance, number=4, option="Good") 
+        option4.save()
+        option5 = QuestionOption(question=instance, number=5, option="Very Good") 
+        option5.save()
 
+@receiver(post_save, sender=Question)
+def check_voting(sender, instance, **kwargs):
+    if instance.voting_type==2:
+
+        x=2
+        lista=instance.options.all()
+        for i in lista:
+            x=x+1
+            option3= QuestionOption(question=instance, number=x, option=i.option, group="g2")
+            i.delete()
+            option3.save() 
+        
+        option1 = QuestionOption(question=instance, number=1, option="Hombre", group="g1")
+        option1.save()
+        option2 = QuestionOption(question=instance, number=2, option="Mujer", group= "g1") 
+        option2.save()
+    
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
+    group= models.CharField(max_length= 50, null= True)
 
     def save(self):
         if not self.number:
@@ -53,7 +87,6 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
-
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
@@ -91,9 +124,7 @@ class Voting(models.Model):
         return [[i['a'], i['b']] for i in votes]
 
     def tally_votes(self, token=''):
-        '''
-        The tally is a shuffle and then a decrypt
-        '''
+        '''The tally is a shuffle and then a decrypt'''
 
         votes = self.get_votes(token)
 
