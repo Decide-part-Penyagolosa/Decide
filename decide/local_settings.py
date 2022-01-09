@@ -13,7 +13,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://decide-penyagolosa.herokuapp.com'
+BASEURL = 'http://localhost:8000'
 
 APIS = {
     'authentication': BASEURL,
@@ -24,13 +24,13 @@ APIS = {
     'postproc': BASEURL,
     'store': BASEURL,
     'visualizer': BASEURL,
-    'voting': BASEURL,
+    'voting': BASEURL
 }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decide',
+        'NAME': 'postgres',
         'USER': 'decide',
         'PASSWORD': 'decide',
         'HOST': '127.0.0.1',
@@ -39,4 +39,6 @@ DATABASES = {
 }
 
 # number of bits for the key, all auths should use the same number of bits
+
+
 KEYBITS = 256
