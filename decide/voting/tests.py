@@ -106,6 +106,42 @@ class VotingTestCase(BaseTestCase):
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
 
+    def test_question_paridad(self):
+        self.login()
+        question = Question(desc='test question', voting_type=2, question_type=1)
+        question.save()
+        lista=question.options.all()
+        opcion=[]
+        for l in lista:
+            opcion.append(l.option)
+            
+        self.assertTrue("Hombre" in opcion)
+        self.assertTrue("Mujer" in opcion)
+    
+    def test_question_paridad(self):
+        self.login()
+        question = Question(desc='test question', voting_type=2, question_type=1)
+        question.save()
+        lista=question.options.all()
+        opcion=[]
+        for l in lista:
+            opcion.append(l.option)
+            
+        self.assertTrue("Hombre" in opcion)
+        self.assertTrue("Mujer" in opcion)
+    
+    def test_dhont_seat_not_pass(self):
+        self.login()
+        question = Question(desc='test question', voting_type=1, question_type=1)
+        with self.assertRaises(ValidationError):
+            question.clean()
+    
+    def test_dhont_seat_pass(self):
+        self.login()
+        question = Question(desc='test question', voting_type=1, question_type=1, seat=155)
+        question.clean()
+        self.assertEqual(question.seat, 155)
+    
     def test_lofensivo_dont_pass(self):
         self.login()
         question = Question(desc='Tonto, esta descripcion contiene alguna palabra ofensiva? Pis, ceporro')

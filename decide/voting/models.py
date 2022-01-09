@@ -12,7 +12,7 @@ class Question(models.Model):
     desc = models.TextField()
     VOTING=[(0, 'Default'),(1, 'Dhont'),
     (2, 'Paridad'),(3, 'Borda')]
-    voting_type= models.SmallIntegerField(choices= VOTING, default=1)
+    voting_type= models.SmallIntegerField(choices= VOTING, default=0)
     
     CHOICES=[(0,'Create your questions below'),(1, 'Binary Question'),
     (2, 'Yes/No Question'),(3, 'Very Bad/ Very Good Question')]
