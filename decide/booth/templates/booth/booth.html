@@ -13,10 +13,11 @@
 
 
 {% block content %}
+<h1>{{ voting.id }} + {{ voting.name }}</h1>
     <div id="app-booth">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <b-navbar-brand tag="h1">Decide </b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
                     <b-nav-item v-on:click="decideLogout">
                         {% trans "logout" %}
@@ -31,6 +32,7 @@
        
         <div class="voting">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            
 
             <!-- Register -->
             
@@ -52,7 +54,6 @@
                         required />
                 </b-form-group>
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
-            
 
             <div id="main">
                 <span class="label">Inicia sesión con:</span>
@@ -83,11 +84,10 @@
             </div>
             </b-form>
         
-            
+           
             <!-- Voting -->
         
             <div v-if="!signup">
-                <h2>[[ voting.question.desc ]]</h2>
                 <b-form-group v-for="opt in voting.question.options" :key="opt.number">
                     <b-form-radio v-model="selected"
                                   :id="'q' + opt.number"

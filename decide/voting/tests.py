@@ -106,6 +106,77 @@ class VotingTestCase(BaseTestCase):
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
 
+    def test_question_paridad(self):
+        self.login()
+        question = Question(desc='test question', voting_type=2, question_type=1)
+        question.save()
+        lista=question.options.all()
+        opcion=[]
+        for l in lista:
+            opcion.append(l.option)
+            
+        self.assertTrue("Hombre" in opcion)
+        self.assertTrue("Mujer" in opcion)
+    
+    def test_question_paridad(self):
+        self.login()
+        question = Question(desc='test question', voting_type=2, question_type=1)
+        question.save()
+        lista=question.options.all()
+        opcion=[]
+        for l in lista:
+            opcion.append(l.option)
+            
+        self.assertTrue("Hombre" in opcion)
+        self.assertTrue("Mujer" in opcion)
+    
+    def test_dhont_seat_not_pass(self):
+        self.login()
+        question = Question(desc='test question', voting_type=1, question_type=1)
+        with self.assertRaises(ValidationError):
+            question.clean()
+    
+    def test_dhont_seat_pass(self):
+        self.login()
+        question = Question(desc='test question', voting_type=1, question_type=1, seat=155)
+        question.clean()
+        self.assertEqual(question.seat, 155)
+
+    
+
+    def test_create_binary_voting(self):
+        q = Question(desc='binary voting', question_type=1)
+        q.save()
+        
+        opt = QuestionOption(question=q)
+        opt.save()
+
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def test_create_YNNS(self):
+        q = Question(desc='test question', question_type=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+    
     def test_lofensivo_dont_pass(self):
         self.login()
         question = Question(desc='Tonto, esta descripcion contiene alguna palabra ofensiva? Pis, ceporro')
@@ -114,13 +185,13 @@ class VotingTestCase(BaseTestCase):
 
     def test_lofensivo_pass_by_words(self):
         self.login()
-        question = Question(desc='Esta descripcion no contiene lenguaje ofensivo')
+        question = Question(desc='Esta descripcion no contiene lenguaje ofensivo', question_type=0, voting_type=2)
         question.clean()
         self.assertEqual(question.desc, 'Esta descripcion no contiene lenguaje ofensivo')
 
     def test_lofensivo_pass_by_percentage(self):
         self.login()
-        question = Question(desc='Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas')
+        question = Question(desc='Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas', question_type=0, voting_type=2)
         question.clean()
         self.assertEqual(question.desc, 'Esta descripcion contiene solo una palabra ofensiva, tonto, pero se necesita que el 20 por ciento sean palabras ofensivas')
         
