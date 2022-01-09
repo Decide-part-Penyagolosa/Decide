@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import MinValueValidator, MaxValueValidator
 from base import mods
 from base.models import Auth, Key
 
@@ -25,7 +26,7 @@ class Question(models.Model):
             raise ValidationError("Se ha detectado lenguaje ofensivo")
         if self.seat==None and self.voting_type==1:
             raise ValidationError("Introduzca los escaños necesarios para usar una votación D'hont")
-
+    
     def __str__(self):
         return self.desc
 

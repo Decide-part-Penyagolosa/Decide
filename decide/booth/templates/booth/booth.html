@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-{% load i18n static %}
 
+{% load i18n static %}
+{% load socialaccount %}
+{% providers_media_js %}
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
@@ -9,6 +11,7 @@
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
 {% endblock %}
 
+
 {% block content %}
 <h1>{{ voting.id }} + {{ voting.name }}</h1>
     <div id="app-booth">
@@ -16,7 +19,7 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide </b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
-                    <b-nav-item href="#" v-on:click="decideLogout">
+                    <b-nav-item v-on:click="decideLogout">
                         {% trans "logout" %}
                     </b-nav-item>
                 </b-navbar-nav>
@@ -26,11 +29,13 @@
             [[ alertMsg ]]
         </b-alert>
 
+       
         <div class="voting">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
             
 
             <!-- Register -->
+            
             <b-form @submit="onSubmitLogin" v-if="signup">
                 <b-form-group label="{% trans "Username" %}" label-for="username">
                     <b-form-input
@@ -49,71 +54,39 @@
                         required />
                 </b-form-group>
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
-            </b-form>
-            <div id="voting">
-                <div id="voting">
-                   <br/>
-                   <div id="styleDiv">
-                   {% if voting.desc %}
-                   <div id="styleDiv">
-                       <p id="textDescription"> {{ voting.desc }} </p>
-                       <p id="guideDescription" class="divGuide" style="padding:0px;margin:0px;">
-                       {% trans "This is the description of the voting" %}
-           
-                       {% if start_date == None%}
-                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertDateNotStart()"/>
-                       {%else%}
-                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertDateStart()"/>
-                       {% endif %}
-                       </p>              	 
-                   </div>
-                   {% endif %}
-                   <br/>
-                    
-                   <div class="styleDiv">
-                       {% if start_date == None%}
 
-                        <p>La votación no ha empezado aún</p>
-                        <p id="pDateNotStart" style="left:0;">{% trans "The votation has not started yet" %}</p>
-                        <div id="guideDateNotStart" class="divGuide" style="padding:5px;margin:5px;">
-                           {% trans "This message indicates you that the voting has not started" %}
-                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
-                       </div>
+            <div id="main">
+                <span class="label">Inicia sesión con:</span>
+            </br>
+            </br>
+                <div id="customBtn" class="customGPlusSignIn">
+                  <span class="icon"></span>
+                  <a href="{% provider_login_url "google" %}">
+                  <span  class="buttonText">Google</span>
+                    </a>
+                </div>
+            </br>
+            </br>
+                <div id="customBtn" class="customGPlusSignIn">
+                    <span class="icon"></span>
+                    <a href="{% provider_login_url "microsoft" %}">
+                    <span  class="buttonText">Microsoft</span>
+                    </a>
+                </div>
+            </br>
+            </br>
+                <div id="customBtn" class="customGPlusSignIn">
+                    <span class="icon"></span>
+                    <a href="{% provider_login_url "github" %}">
+                    <span  class="buttonText">Github</span>
+                    </a>
+                </div>
+            </div>
+            </b-form>
+        
            
-                   {%else%}
-                       <p>{{ start_date }}</p>
-           
-                       <p id="pDate" style="left:0;">{% trans "The votation started:" %}{{ start_date }}</p>
-                       <div id="guideDate" class="divGuide" style="margin-left:20px;padding:5px;">
-                           {% trans "This represents the date that the voting started" %}
-                          {%if end_date == None%}
-                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertStillVote()"/>
-                       {% else %}
-                       <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertNotStillVote()"/>
-                       {% endif %}
-                       </div>
-                       <br>
-                       {%if end_date == None%}
-                           <p>Aún puede votar, no ha finalizado la votación</p>
-                           <p id="pStillVote" style="left:0;">{% trans "You can still vote, the voting has not finished" %}</p>
-                           <div id="guideStillVote" class="divGuide" style="margin-left:20px;padding:5px;">
-                           {% trans "The voting has not finished yet then you can vote" %}
-                           <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
-                           </div>
-                           <br>
-                       {% else %}
-                           <p>Ya no puede votar, la votación se cerró el: {{ end_date }}</p>
-                           <p id="pStillNotVote" style="left:0;">{% trans "You can not vote now, the voting closed:" %}{{ end_date }}</p>
-                           <div id="guideNotStillVote" class="divGuide" style="margin-left:5px;padding:5px;">
-                           {% trans "The voting has finished,you can not vote" %}
-                           <input class="buttonGuide" type="submit" value="{% trans "Accept" %}" onClick="alertLinkLogOut()"/>
-                           </div>
-                           <br>
-                        {% endif %}
-           
-                   {% endif %}
-                   </div>
             <!-- Voting -->
+        
             <div v-if="!signup">
                 <b-form-group v-for="opt in voting.question.options" :key="opt.number">
                     <b-form-radio v-model="selected"
@@ -127,8 +100,10 @@
                     {% trans "Vote" %}
                 </b-button>
             </div>
+            
         </div>
     </div>
+        
 {% endblock %}
 
 {% block extrabody %}
@@ -150,6 +125,9 @@
 
     <script>
         var voting = {{voting|safe}};
+
+        console.log('{% url "gateway" "authentication" "/login/" %}');
+
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-booth',
@@ -211,6 +189,7 @@
                             }
                         });
                 },
+                
                 onSubmitLogin(evt) {
                     evt.preventDefault();
                     this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
@@ -236,11 +215,17 @@
                 decideLogout(evt) {
                     evt.preventDefault();
                     var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                    this.token = null;
-                    this.user = null;
-                    document.cookie = 'decide=;';
-                    this.signup = true;
+                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data)
+                        .then(data => {
+                            this.token = null;
+                            this.user = null;
+                            document.cookie = 'decide=;';
+                            this.signup = true; 
+
+                            window.location.href = '/authentication/logoutG';
+                        })
+                    
+
                 },
                 decideEncrypt() {
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
@@ -256,13 +241,19 @@
                         voter: this.user.id,
                         token: this.token
                     }
-                    this.postData("{% url "gateway" "store" "/" %}", data)
+
+                    this.postData('{% url "gateway" "booth" "/votingCount/" %}', {
+                        option: this.selected.toString(),
+                        voting: data.voting
+                    }).then(() => {
+                        this.postData("{% url "gateway" "store" "/" %}", data)
                         .then(data => {
                             this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
                         })
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
+                    });
                 },
                 showAlert(lvl, msg) {
                     this.alertLvl = lvl;
