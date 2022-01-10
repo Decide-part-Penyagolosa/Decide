@@ -1,7 +1,5 @@
-[![Python application](https://github.com/Penyagolosa-3/Decide/actions/workflows/django.yml/badge.svg?branch=develop)](https://github.com/Penyagolosa-3/Decide/actions/workflows/django.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/06c453c2aba8409d8c5fbf354704fd65)](https://www.codacy.com/gh/Penyagolosa-3/Decide/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Penyagolosa-3/Decide&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/06c453c2aba8409d8c5fbf354704fd65)](https://www.codacy.com/gh/Penyagolosa-3/Decide/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Penyagolosa-3/Decide&utm_campaign=Badge_Coverage)
-
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/95a52d5e139945f5b89ab6fbd67266e7)](https://www.codacy.com/gh/Decide-part-Penyagolosa/Decide/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Decide-part-Penyagolosa/Decide&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/95a52d5e139945f5b89ab6fbd67266e7)](https://www.codacy.com/gh/Decide-part-Penyagolosa/Decide/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Decide-part-Penyagolosa/Decide&utm_campaign=Badge_Coverage)
 [![Python application](https://github.com/Decide-part-Penyagolosa/Decide/actions/workflows/django.yml/badge.svg?branch=deploy)](https://github.com/Decide-part-Penyagolosa/Decide/actions/workflows/django.yml)
 
 Plataforma voto electrónico educativa
